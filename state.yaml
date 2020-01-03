@@ -1,0 +1,148 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nspc2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp
+  namespace: nspc2
+spec:
+  containers:
+  - name: webapp
+    image: ngnx:latest
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: nspc2
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "32Gi"
+          requests:
+            memory: "24Gi"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nspc3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: nspc3
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db
+  namespace: nspc3
+spec:
+  containers:
+  - name: db
+    image: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: nspc3
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: apache2
+        image: httpd:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nspc4
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db
+  namespace: nspc4
+spec:
+  containers:
+  - name: db
+    image: redis
+    ports:
+    - containerPort: 6379
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp
+  namespace: nspc4
+spec:
+  containers:
+  - name: webapp
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-config
+  namespace: default
+data:
+  myconf.txt: |
+    here my config
+    here a second line
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nspc5
+---
